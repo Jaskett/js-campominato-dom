@@ -40,7 +40,7 @@ function buildGrid(difficulty) {
 
         if(bombArray.includes(thisCellNumber)) {
             this.classList.add('bomb');
-            alert('Hai perso');
+            gameEnd(false);
         }
         else {
             this.classList.add('active');
@@ -48,11 +48,39 @@ function buildGrid(difficulty) {
             console.log(`Safe cells clicked: ${safeCellsClicked.length} To win: ${gridSize - numberOfBombs}`);
 
             if(safeCellsClicked.length >= gridSize - numberOfBombs) {
-                alert('Hai vinto!');
+                gameEnd(true);
             }
         }
 
         this.removeEventListener('click', cellClickHandler);
+    }
+
+    /* Questa funzione prende un valore booleano (true === vittoria, false === sconfitta)
+    non ritorna niente e manipola il DOM per mostrare la schermata di fine gioco al giocatore */
+    function gameEnd(winLose) {
+        let result = document.getElementById('result');
+        let resultText = "";
+
+        if(winLose) {
+            resultText = `Hai vinto!`;
+        }
+        else {
+            resultText = `Hai perso. hai fatto ${safeCellsClicked.length} punti su ${gridSize - numberOfBombs}`
+        }
+
+        result.textContent = resultText;
+        result.classList.remove('hidden');
+
+        // Disattiviamo gli eventListener su tutte le celle
+        cells = document.getElementsByClassName('cell');
+    
+        for(let i = 0; i < cells.length; i++) {
+            cells[i].removeEventListener('click', cellClickHandler);
+
+            if(bombArray.includes(parseInt(cells[i].textContent))) {
+                cells[i].classList.add('bomb');
+            }
+        }
     }
 }
 
@@ -69,6 +97,8 @@ function prepareGame() {
 
     // Sostituiamo il container della griglia con quello generato dalla funzione
     grid.parentNode.replaceChild(newGrid, grid);
+
+    document.getElementById('result').classList.add('hidden');
 }
 
 function difficultyToNumber(difficultyString) {
