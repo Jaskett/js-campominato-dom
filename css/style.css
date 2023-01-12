@@ -17,9 +17,11 @@ header {
 
 main {
     height: 85vh;
+    padding: 2rem;
     background-color: lightgray;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -32,6 +34,10 @@ main {
     justify-content: flex-start;
     align-items: center;
     align-content: flex-start;
+}
+
+.hidden {
+    display: none;
 }
 
 .cell {
@@ -57,12 +63,13 @@ main {
     width: calc(100% / 7);
 }
 
-.cell.active {
-    background-color: lightseagreen;
+.cell.bomb {
+    background-color: red;
 }
 
-.hidden {
-    display: none;
+.cell.active span,
+cell.bomb span {
+    display: block;
 }
 
 footer {
