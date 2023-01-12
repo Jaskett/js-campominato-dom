@@ -9,7 +9,7 @@ function buildGrid(difficulty) {
     thisGrid.classList.add('grid-container');
 
     // Convertiamo "difficulty" (che è una stringa) in un valore numerico con uno la nostra funzione dedicata
-    let gridSize = difficultyToNumber(difficulty);
+    let gridSize = difficulty ** 2;
 
     // Settiamo una variabile con la quantità di bombe che vogliamo generare
     let numberOfBombs = 16;
@@ -17,17 +17,23 @@ function buildGrid(difficulty) {
     // Generiamo un array di bombe appropriato per la dimensione della grid.
     let bombArray = generateUniqueRandomsInRange(numberOfBombs, gridSize);
     console.log(bombArray);
+
+    let recursiveCount = 0;
+
     let safeCellsClicked = [];
 
     // In questo loop popoliamo il grid-container di tanti div quanta è la gridSize. Aggiungiamo le classi appropriate.
     for(let i = 1; i <= gridSize; i++) {
         let newCell = document.createElement('div');
-        newCell.innerHTML = `<span>${i}</span>`;
+        newCell.innerHTML = i;
+        newCell.dataset.cellno = i;
         newCell.classList.add('cell');
-        newCell.classList.add(difficulty);
+        newCell.style.width = `calc(100% / ${difficulty})`
+        newCell.style.height = `calc(100% / ${difficulty})`
 
         // Aggiungiamo un eventListener che attiva/disattiva la classe "active" se si clicca sul div
         newCell.addEventListener('click', cellClickHandler);
+        newCell.addEventListener('contextmenu', cellRightClick);
         thisGrid.append(newCell);
     }
 
@@ -36,14 +42,16 @@ function buildGrid(difficulty) {
 
     // HELPER FUNCTIONS. Le creo all'interno di questa funzione così può accedere alla varaibili dichiarate al suo interno.
     function cellClickHandler() {
-        let thisCellNumber = parseInt(this.textContent);
+        let thisCellNumber = parseInt(this.dataset.cellno);
 
+        // Se hai cliccato una bomba
         if(bombArray.includes(thisCellNumber)) {
-            this.classList.add('bomb');
+            this.classList.add("bomb");
             gameEnd(false);
         }
+
+        // Se hai cliccato una cella
         else {
-            this.classList.add('active');
             safeCellsClicked.push(thisCellNumber);
             console.log(`Safe cells clicked: ${safeCellsClicked.length} To win: ${gridSize - numberOfBombs}`);
 
@@ -55,6 +63,23 @@ function buildGrid(difficulty) {
         this.removeEventListener('click', cellClickHandler);
     }
 
+    function cellRightClick(event) {
+        event.preventDefault();
+
+        if (!this.classList.contains('active')) {
+            console.log(event.target);
+            
+            if (!this.classList.contains('flag')) {
+                this.classList.add('flag');
+                this.removeEventListener('click', cellClickHandler);
+            }
+            else {
+                this.classList.remove('flag');
+                this.addEventListener('click', cellClickHandler);
+            }
+        }
+    }
+
     /* Questa funzione prende un valore booleano (true === vittoria, false === sconfitta)
     non ritorna niente e manipola il DOM per mostrare la schermata di fine gioco al giocatore */
     function gameEnd(winLose) {
@@ -63,6 +88,7 @@ function buildGrid(difficulty) {
 
         if(winLose) {
             resultText = `Hai vinto!`;
+
         }
         else {
             resultText = `Hai perso. hai fatto ${safeCellsClicked.length} punti su ${gridSize - numberOfBombs}`
@@ -76,18 +102,32 @@ function buildGrid(difficulty) {
     
         for(let i = 0; i < cells.length; i++) {
             cells[i].removeEventListener('click', cellClickHandler);
+            cells[i].removeEventListener('contextmenu', cellRightClick);
 
-            if(bombArray.includes(parseInt(cells[i].textContent))) {
+            // Se abbiamo perso, evidenziamo tutte le bombe
+            if(!winLose && bombArray.includes(parseInt(cells[i].dataset.cellno))) {
                 cells[i].classList.add('bomb');
+                cells[i].classList.remove('flag');
             }
         }
+    }
+
+    function countBombsInArray(adjacentList) {
+        let sumOfBombs = 0;
+
+        for(let i = 0; i < adjacentList.length; i++) {
+            if(bombArray.includes(adjacentList[i])) {
+                sumOfBombs++;
+            }
+        }
+        return sumOfBombs;
     }
 }
 
 // La funzione chiamata con il click al bottone "start"
 function prepareGame() {
     // Leggiamo la difficolta scelta dall'utente (nel select)
-    userPickedDifficulty = document.getElementById('level').value;
+    userPickedDifficulty = parseInt(document.getElementById('level').value);
 
     // Imbrigliamo il container della griglia
     let grid = document.querySelector('.grid-container');
@@ -99,20 +139,6 @@ function prepareGame() {
     grid.parentNode.replaceChild(newGrid, grid);
 
     document.getElementById('result').classList.add('hidden');
-}
-
-function difficultyToNumber(difficultyString) {
-    switch(difficultyString) {
-        case 'easy':
-            return 100;
-            break;
-        case 'medium':
-            return 81;
-            break;
-        case 'hard':
-            return 49;
-            break;
-    }
 }
 
 // questa funzione prende due integers (quantity e rangeMax) e restituisce un array contentente "quantity" elementi generati a caso da 1 a "rangemax".

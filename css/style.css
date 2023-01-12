@@ -16,9 +16,9 @@ header {
 }
 
 main {
-    height: 85vh;
+    min-height: 89vh;
     padding: 2rem;
-    background-color: lightgray;
+    background-color: #bdbdbd;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -29,6 +29,7 @@ main {
     border: 1px solid black;
     height: 500px;
     width: 500px;
+    flex-shrink: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -44,32 +45,35 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
     cursor: pointer;
+    font-family: monospace;
+    font-size: 1rem;
+    border-top: 4px solid white;
+    border-left: 4px solid white;
+    border-right: 4px solid #7b7b7b;
+    border-bottom: 4px solid #7b7b7b;
 }
 
-.cell.easy {
-    height: calc(100% / 10);
-    width: calc(100% / 10);
-}
-
-.cell.medium {
-    height: calc(100% / 9);
-    width: calc(100% / 9);
-}
-
-.cell.hard {
-    height: calc(100% / 7);
-    width: calc(100% / 7);
-}
-
-.cell.bomb {
-    background-color: red;
+.cell.active {
+    border: 1px solid #7b7b7b;
 }
 
 .cell.active span,
-cell.bomb span {
+.cell.bomb span {
     display: block;
+}
+
+.cell.bomb span::before {
+    content: '\01F4A3';
+}
+
+.cell.flag span {
+    display: block;
+    pointer-events: none;
+}
+
+.cell.flag span::before {
+    content: '\01F6A9';
 }
 
 footer {
