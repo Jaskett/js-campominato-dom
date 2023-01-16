@@ -54,9 +54,65 @@ main {
     border-bottom: 4px solid #7b7b7b;
 }
 
+.cell::after {
+    content: '';
+    padding-bottom: 100%;
+}
+
+.cell.easy {
+    height: calc(100% / 10);
+    width: calc(100% / 10);
+}
+
+.cell.medium {
+    height: calc(100% / 9);
+    width: calc(100% / 9);
+}
+
+.cell.hard {
+    height: calc(100% / 7);
+    width: calc(100% / 7);
+}
+
+.cell span {
+    display: none;
+}
+
 .cell.active {
     border: 1px solid #7b7b7b;
 }
+
+.b1 {
+    color: #0000ff; 
+ }
+
+ .b2 {
+     color: #007b00; 
+  }
+
+  .b3 {
+     color: #ff0000; 
+  }
+
+  .b4 {
+     color: #00007b; 
+  }
+
+  .b5 {
+     color: #7b0000; 
+  }
+
+  .b6 {
+     color: #007b7b; 
+  }
+
+  .b7 {
+     color: #000000; 
+  }
+  
+  .b8 {
+     color: #7b7b7b; 
+  }
 
 .cell.active span,
 .cell.bomb span {
@@ -64,6 +120,7 @@ main {
 }
 
 .cell.bomb span::before {
+    font-size: 0.9em;
     content: '\01F4A3';
 }
 
@@ -73,6 +130,7 @@ main {
 }
 
 .cell.flag span::before {
+    font-size: 0.9em;
     content: '\01F6A9';
 }
 
